@@ -112,11 +112,26 @@ class ApiRequester:
         json_response = response.json()
         return json_response
 
+class WantedFilm:
+    rating = 'Не найдено'
+    year = ''
+    countries = ''
+    genre = ''
+    description = ''
+
+    def __init__(self, rating, year, countries, genre, description):
+        self.rating = rating
+        self.year = year
+        self.countries = countries
+        self.genre = genre
+        self.description = description
+
 # -- Переменная, отвечающая за хранение url-ссылки запроса --
 url_film_info = ""
 # -- Переменная, отвечающая за хранение данных, полученных от пользователя --
 dataFromUser: RequestData
 
+keys_of_dict = []
 params = dict()
 
  # -- Инициализация класса UserCommunication --
@@ -136,40 +151,69 @@ if choice == 1:
         'yearFrom': dataFromUser.yearFrom,
         'yearTo': dataFromUser.yearTo,
     }
+    keys_of_dict = ['items', 'kinopoiskId', 'ratingKinopoisk']
 elif choice == 2:
     url_film_info = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/' \
                     'search-by-keyword'
-    print(url_film_info)
     dataFromUser: RequestData = userCommunicator.dataRequestFromUserByKeywords()
     params = {
         'keyword': dataFromUser.keywords
     }
+    keys_of_dict = ['films', 'filmId', 'rating']
 
 apiRequester: ApiRequester = ApiRequester()
 json_response = apiRequester.callApi(url_film_info, params)
 
+print(json_response)
 
 print("Вот, что ты можешь посмотреть:")
-if choice == 1:
-    for slovar in json_response["items"]:
-        print(slovar["kinopoiskId"], slovar["nameRu"])
-elif choice == 2:
-    for slovar in json_response["films"]:
-        print(slovar["filmId"], slovar["nameRu"])
+
+for slovar in json_response[keys_of_dict[0]]:
+    print(slovar[keys_of_dict[1]], slovar["nameRu"])
+
 
 print("\n")
 id = input("О какой из этих работ ты хотел бы узнать больше?\n"
            "Введи id фильма (цифры перед названием):\n")
+
+wanted_film = {}
+found = False
+for film in json_response[keys_of_dict[0]]:
+    if film[keys_of_dict[1]] == int(id):
+        wanted_film = film
+        found = True
+
+while not found:
+    id = input("В найденом списке нет введенного id.\n"
+           "Пожалуйста, введи id фильма (цифры перед названием) из списка:\n")
+    for film in json_response[keys_of_dict[0]]:
+        if film[keys_of_dict[1]] == int(id):
+            wanted_film = film
+            found = True
+
 url_film_awards = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/'\
                   + id + '/awards'
-
-
 params = {
     "id": id
 }
 
 json_awards_response = apiRequester.callApi(url_film_awards, params)
 
+message = ""
+if wanted_film.get('nameRu'):
+    message += f"Название фильма: {wanted_film['nameRu']}\n"
+if wanted_film.get(keys_of_dict[2]):
+    message += f"Рейтинг фильма: {wanted_film[keys_of_dict[2]]}\n"
+if wanted_film.get('year'):
+    message += f"Год выхода: {wanted_film['year']}\n"
+if wanted_film.get('countries'):
+    message += f"Страна: {wanted_film['countries'][0]['country']}\n"
+if wanted_film.get('genres'):
+    message += f"Жанр: {wanted_film['genres'][0]['genre']}\n"
+if wanted_film.get('description'):
+    message += f"Описание:\n{wanted_film['description']}"
+
+print(message)
 print("Это произведение получило следующие награды:")
 for slovar in json_awards_response["items"]:
     print(f'{slovar["name"]}. {slovar["nominationName"]}.')
