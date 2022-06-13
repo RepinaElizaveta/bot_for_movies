@@ -95,7 +95,7 @@ class UserCommunication:
     # Метод, вызываемый в случае выбора пользователем поиска по ключевым словам
     def dataRequestFromUserByKeywords(self) -> RequestData:
         ''' Метод производит поиск по ключевым словам '''
-        keywords = input("Введи ключевые слова:\n")
+        keywords = input("Введи через запятую ключевые слова:\n")
         return RequestData("", 0, 0, 0, 2022, keywords)
 
 
@@ -164,7 +164,6 @@ elif choice == 2:
 apiRequester: ApiRequester = ApiRequester()
 json_response = apiRequester.callApi(url_film_info, params)
 
-print(json_response)
 
 print("Вот, что ты можешь посмотреть:")
 
