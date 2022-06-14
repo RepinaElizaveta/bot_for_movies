@@ -63,8 +63,8 @@ class UserCommunication:
         while True:
             try:
                 my_type = ()
-                what = int(input("Что ты хочешь посмотреть?\n"
-                                 "Введи цифру:\n 1.Фильм\n 2.Телевизионное шоу\n"
+                what = int(input("Что ты хочешь посмотреть?\nВведи"
+                                 "цифру:\n 1.Фильм\n 2.Телевизионное шоу\n"
                                  " 3.Сериал\n 4.Мини-сериал\n"))
                 if what > 4:
                     raise ValueError
@@ -85,8 +85,9 @@ class UserCommunication:
         while True:
             try:
                 genre = int(input("Какой жанр ты хочешь посмотреть?\n"
-                                  "Введи цифру из списка:\n 1.Триллер\n 2.Драма\n "
-                                  "3.Криминал\n 4.Мелодрама\n 5.Детектив\n"))
+                                  "Введи цифру из списка:\n 1.Триллер\n"
+                                  " 2.Драма\n 3.Криминал\n 4.Мелодрама\n"
+                                  " 5.Детектив\n"))
                 if genre > 5:
                     raise ValueError
                 else:
@@ -98,7 +99,8 @@ class UserCommunication:
         while True:
             try:
                 ratingFrom = int(input("Рейтинг может быть от 0 до 10.\n"
-                                       "Я буду искать проивзведения с рейтингом не ниже:\n"))
+                                       "Я буду искать проивзведения с "
+                                       "рейтингом не ниже:\n"))
                 if ratingFrom > 10:
                     raise ValueError
                 else:
@@ -222,7 +224,8 @@ for film in json_response[keys_of_dict[0]]:
 # Блок, который проверяет случай ненахождения выбранного фильма в списке
 while not found:
     id = input("В найденом списке нет введенного id.\n"
-               "Пожалуйста, введи id фильма (цифры перед названием) из списка:\n")
+               "Пожалуйста, введи id фильма (цифры перед названием) "
+               "из списка:\n")
     for film in json_response[keys_of_dict[0]]:
         if film[keys_of_dict[1]] == int(id):
             wanted_film = film
