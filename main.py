@@ -30,39 +30,36 @@ class UserCommunication:
               "Я помогу найти то, что тебе точно понравится! "
               "Для того, чтобы я смог помочь,пожалуйста, "
               "ответь на несколько вопросов.")
-        try:
-            trial = int(input("Пожалуйста, выбери цифру способа, "
-                              "которым ты хочешь найти фильм:\n"
-                              "1. По фильтрам\n"
-                              "2. По ключевым словам\n"))
-        except:
-            trial = int(input("Введно некорректное значение.\n"
-                              "Пожалуйста, выбери цифру способа, "
-                              "которым ты хочешь найти фильм:\n"
-                              "1. По фильтрам\n"
-                              "2. По ключевым словам\n"))
-        while trial not in range(0, 3):
+
+        while True:
             try:
-                trial = int(input("Введно некорректное значение.\n"
-                                  "Пожалуйста, выбери цифру способа, "
+                trial = int(input("Пожалуйста, выбери цифру способа, "
                                   "которым ты хочешь найти фильм:\n"
                                   "1. По фильтрам\n"
                                   "2. По ключевым словам\n"))
-            except:
-                trial = int(input("Введно некорректное значение.\n"
-                                  "Пожалуйста, выбери цифру способа, "
-                                  "которым ты хочешь найти фильм:\n"
-                                  "1. По фильтрам\n"
-                                  "2. По ключевым словам\n"))
+                if trial not in range(0, 3):
+                    raise ValueError
+                break
+            except ValueError:
+                print("Введно некорректное значение.")
         return trial
 
     # Метод, вызываемый в случае выбора пользователем поиска по фильтрам
     def dataRequestFromUserByFilter(self) -> RequestData:
         """ Метод производит поиск по фильтрам """
 
-        what = int(input("Что ты хочешь посмотреть?\n"
-                         "Введи цифру:\n 1.Фильм\n 2.Телевизионное шоу\n "
-                         "3.Сериал\n 4.Мини-сериал\n"))
+        while True:
+            try:
+                my_type = ()
+                what = int(input("Что ты хочешь посмотреть?\nВведи "
+                                 "цифру:\n 1.Фильм\n 2.Телевизионное шоу\n"
+                                 " 3.Сериал\n 4.Мини-сериал\n"))
+                if what > 4:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Введно некорректное значение.\n"
+                      "Пожалуйста, выбери цифру снова.")
         if what == 1:
             my_type = "FILM"
         if what == 2:
@@ -71,38 +68,65 @@ class UserCommunication:
             my_type = "TV_SERIES"
         if what == 4:
             my_type = "MINI_SERIES"
-        else:
-            my_type = None
 
-        while int(what) >= 5:
-            print("Нет такого значения.")
-            what = int(input("Введи цифру заново:\n"))
+        while True:
+            try:
+                genre = int(input("Какой жанр ты хочешь посмотреть?\n"
+                                  "Введи цифру из списка:\n 1.Триллер\n"
+                                  " 2.Драма\n 3.Криминал\n 4.Мелодрама\n"
+                                  " 5.Детектив\n"))
+                if genre > 5 or genre < 1:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Введно некорректное значение.\n"
+                      "Пожалуйста, выбери цифру снова.")
 
-        genre = input("Какой жанр ты хочешь посмотреть?\n"
-                      "Введи цифру из списка:\n 1.Триллер\n 2.Драма\n "
-                      "3.Криминал\n 4.Мелодрама\n 5.Детектив\n")
-
-        while int(genre) >= 6:
-            print("Нет такого значения.")
-            genre = (input("Введи цифру заново:\n"))
-        ratingFrom = input("Рейтинг может быть от 0 до 10.\n"
-                           "Я буду искать проивзведения с рейтингом не ниже:\n")
-
-        while int(ratingFrom) >= 11:
-            print("Нет такого значения.")
-            ratingFrom = (input("Введи цифру заново:\n"))
+        while True:
+            try:
+                ratingFrom = int(input("Рейтинг может быть от 0 до 10.\n"
+                                       "Я буду искать проивзведения с "
+                                       "рейтингом не ниже:\n"))
+                if ratingFrom > 10 or ratingFrom < 0:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Введно некорректное значение.\n"
+                      "Пожалуйста, выбери цифру снова.")
 
         print("Выбери временной промежуток.")
-        yearFrom = input("От какого года мне искать?\n")
-        yearTo = input("На каком годе остановиться?\n")
 
+        while True:
+            try:
+                yearFrom = int(input("От какого года мне искать?\n"))
+                if yearFrom < 0 or yearFrom > 2022:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Введно некорректное значение.\n"
+                      "Пожалуйста, выбери цифру снова.")
+        while True:
+            try:
+                yearTo = int(input("На каком годе остановиться?\n"))
+                if yearTo < yearFrom or yearTo > 2022:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Введно некорректное значение.\n"
+                      "Пожалуйста, выбери цифру снова.")
         # Возвращаем информацию о введенных фильтрах
         return RequestData(my_type, genre, ratingFrom, yearFrom, yearTo, "")
 
     # Метод, вызываемый в случае выбора пользователем поиска по ключевым словам
     def dataRequestFromUserByKeywords(self) -> RequestData:
         """ Метод производит поиск по ключевым словам """
-        keywords = input("Введи через запятую ключевые слова:\n")
+        while True:
+            try:
+                keywords = input("Введи через запятую ключевые слова:\n")
+                break
+            except ValueError:
+                print("Введно некорректное значение.\n"
+                      "Пожалуйста, выбери цифру снова.")
 
         # Возвращаем информацию о введенных ключевых словах
         return RequestData("", 0, 0, 0, 2022, keywords)
@@ -167,13 +191,23 @@ json_response = apiRequester.callApi(url_film_info, params)
 print("Вот, что ты можешь посмотреть:")
 
 for slovar in json_response[keys_of_dict[0]]:
-    print(slovar[keys_of_dict[1]], slovar["nameRu"])
+    name = "nameRu"
+    if not slovar.get(name):
+        name = "nameEn"
+    print(slovar[keys_of_dict[1]], slovar[name])
 
 print("\n")
 
 # Выбор пользователем фильма, о котором он хотел бы узнать подробнее
-id = input("О какой из этих работ ты хотел бы узнать больше?\n"
-           "Введи id фильма (цифры перед названием):\n")
+
+while True:
+    try:
+        id = int(input("О какой из этих работ ты хотел бы узнать больше?\n"
+                       "Введи id фильма (цифры перед названием):\n"))
+        break
+    except ValueError:
+        print("Введно некорректное значение.\n"
+              "Пожалуйста, введи цифру снова.")
 
 # -- Словарь для хранения информации о выбранном фильме --
 wanted_film = {}
@@ -182,14 +216,20 @@ wanted_film = {}
 #    в предложенном списке --
 found = False
 for film in json_response[keys_of_dict[0]]:
-    if film[keys_of_dict[1]] == int(id):
+    if film[keys_of_dict[1]] == id:
         wanted_film = film
         found = True
 
 # Блок, который проверяет случай ненахождения выбранного фильма в списке
 while not found:
-    id = input("В найденом списке нет введенного id.\n"
-               "Пожалуйста, введи id фильма (цифры перед названием) из списка:\n")
+    try:
+        id = int(input("В найденом списке нет введенного id.\n"
+                       "Пожалуйста, введи id фильма (цифры перед названием) "
+                       "из списка:\n"))
+    except:
+        id = int(input("Введено некорректное значение.\n"
+                       "О какой из этих работ ты хотел бы узнать больше?\n"
+                       "Введи id фильма (цифры перед названием):\n"))
     for film in json_response[keys_of_dict[0]]:
         if film[keys_of_dict[1]] == int(id):
             wanted_film = film
@@ -197,7 +237,7 @@ while not found:
 
 # -- Переменная, хранящая ссылку на api с данными о наградах фильма --
 url_film_awards = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/' \
-                  + id + '/awards'
+                  + str(id) + '/awards'
 params = {
     "id": id
 }
@@ -228,3 +268,28 @@ for slovar in json_awards_response["items"]:
     print(f'{slovar["name"]}. {slovar["nominationName"]}.')
 if len(json_awards_response["items"]) == 0:
     print("Нет наград")
+
+while True:
+    try:
+        mark = int(input("Пожалуйста, оцени работу бота!\n"
+                         "Выбери цифру от 1 до 5, "
+                         "где 1 - очень плохо, а 5 - очень хорошо.\n"))
+        if mark > 5 or mark < 1:
+            raise ValueError
+        break
+    except ValueError as ex:
+        print("Введно некорректное значение.\n"
+              "Пожалуйста, выбери цифру снова.")
+
+if mark == 5:
+    good = input("Что тебе особенно понравилось?\n")
+    print("Спасибо за твой отзыв!")
+if mark >= 2 and mark <= 4:
+    cool = input("Что тебе понравилось?\n")
+    bad = input("Что тебе не понравилось?\n")
+    advice = input("Как ты считаешь, что еще можно добавить в бот?\n")
+    print("Спасибо за твой отзыв!")
+if mark == 1:
+    bad = input("Что тебе не понравилось?\n")
+    advice = input("Как ты считаешь, что еще можно добавить в бот?\n")
+    print("Спасибо за твой отзыв!")
