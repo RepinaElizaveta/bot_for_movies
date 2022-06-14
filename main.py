@@ -161,32 +161,39 @@ params = dict()
 # -- Инициализация класса UserCommunication --
 userCommunicator: UserCommunication = UserCommunication()
 
-# !Начало общения с пользователем!
-choice = userCommunicator.startCommunication()
+while True:
+    # !Начало общения с пользователем!
+    choice = userCommunicator.startCommunication()
 
-# На основе выбранной траектории происходит зарос данных по определенной ссылке
-if choice == 1:
-    url_film_info = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/'
-    dataFromUser: RequestData = userCommunicator.dataRequestFromUserByFilter()
-    params = {
-        'genres': dataFromUser.genre,
-        'type': dataFromUser.my_type,
-        'ratingFrom': dataFromUser.ratingFrom,
-        'yearFrom': dataFromUser.yearFrom,
-        'yearTo': dataFromUser.yearTo,
-    }
-    keys_of_dict = ['items', 'kinopoiskId', 'ratingKinopoisk']
-elif choice == 2:
-    url_film_info = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/' \
-                    'search-by-keyword'
-    dataFromUser: RequestData = userCommunicator.dataRequestFromUserByKeywords()
-    params = {
-        'keyword': dataFromUser.keywords
-    }
-    keys_of_dict = ['films', 'filmId', 'rating']
+    # На основе выбранной траектории происходит зарос данных по определенной ссылке
+    if choice == 1:
+        url_film_info = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/'
+        dataFromUser: RequestData = userCommunicator.dataRequestFromUserByFilter()
+        params = {
+            'genres': dataFromUser.genre,
+            'type': dataFromUser.my_type,
+            'ratingFrom': dataFromUser.ratingFrom,
+            'yearFrom': dataFromUser.yearFrom,
+            'yearTo': dataFromUser.yearTo,
+        }
+        keys_of_dict = ['items', 'kinopoiskId', 'ratingKinopoisk']
+    elif choice == 2:
+        url_film_info = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/' \
+                        'search-by-keyword'
+        dataFromUser: RequestData = userCommunicator.dataRequestFromUserByKeywords()
+        params = {
+            'keyword': dataFromUser.keywords
+        }
+        keys_of_dict = ['films', 'filmId', 'rating']
 
-apiRequester: ApiRequester = ApiRequester()
-json_response = apiRequester.callApi(url_film_info, params)
+    apiRequester: ApiRequester = ApiRequester()
+    json_response = apiRequester.callApi(url_film_info, params)
+
+    if json_response[keys_of_dict[0]] != []:
+        break
+
+    print("Извините, ничего не найдено.\n"
+          "Пожалуйста, попробуйте заново.\n")
 
 print("Вот, что ты можешь посмотреть:")
 
@@ -196,10 +203,9 @@ for slovar in json_response[keys_of_dict[0]]:
         name = "nameEn"
     print(slovar[keys_of_dict[1]], slovar[name])
 
-print("\n")
+print()
 
 # Выбор пользователем фильма, о котором он хотел бы узнать подробнее
-
 while True:
     try:
         id = int(input("О какой из этих работ ты хотел бы узнать больше?\n"
@@ -222,14 +228,16 @@ for film in json_response[keys_of_dict[0]]:
 
 # Блок, который проверяет случай ненахождения выбранного фильма в списке
 while not found:
-    try:
-        id = int(input("В найденом списке нет введенного id.\n"
-                       "Пожалуйста, введи id фильма (цифры перед названием) "
-                       "из списка:\n"))
-    except:
-        id = int(input("Введено некорректное значение.\n"
-                       "О какой из этих работ ты хотел бы узнать больше?\n"
-                       "Введи id фильма (цифры перед названием):\n"))
+    while True:
+        try:
+            id = int(input("В найденом списке нет введенного id.\n"
+                           "Пожалуйста, введи id фильма (цифры перед названием) "
+                           "из списка:\n"))
+            break
+        except ValueError:
+            id = int(input("Введено некорректное значение.\n"
+                           "О какой из этих работ ты хотел бы узнать больше?\n"
+                           "Введи id фильма (цифры перед названием):\n"))
     for film in json_response[keys_of_dict[0]]:
         if film[keys_of_dict[1]] == int(id):
             wanted_film = film
@@ -261,6 +269,7 @@ if wanted_film.get('description'):
     message += f"Описание:\n{wanted_film['description']}"
 
 print(message)
+print()
 
 # Вывод на экран информации о наградах фильма
 print("Это произведение получило следующие награды:")
@@ -268,6 +277,8 @@ for slovar in json_awards_response["items"]:
     print(f'{slovar["name"]}. {slovar["nominationName"]}.')
 if len(json_awards_response["items"]) == 0:
     print("Нет наград")
+
+print("--------------------")
 
 while True:
     try:
